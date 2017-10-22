@@ -1,9 +1,9 @@
 <div class="eventCalendar" n:snippet="ecCalendar">
     <table class="ec-monthTable">
         <caption>
-        {if $options["showTopNav"]==TRUE}<a n:href="changeMonth!, 'year' => $prev['year'], 'month' => $prev['month']" class="ajax">{_}<{/_}</a>{/if}
+        {if $options["showTopNav"]==TRUE}<a n:href="changeMonth!, 'year' => $prev['year'], 'month' => $prev['month']" class="ajax">{_"<"}</a>{/if}
         <span class="ec-month">{_$monthNames[$dateInfo["month"]-1]}</span><span class="ec-year">{$dateInfo["year"]}</span>
-        {if $options["showTopNav"]==TRUE}<a n:href="changeMonth!, 'year' => $next['year'], 'month' => $next['month']" class="ajax">{_}>{/_}</a>{/if}
+        {if $options["showTopNav"]==TRUE}<a n:href="changeMonth!, 'year' => $next['year'], 'month' => $next['month']" class="ajax">{_">"}</a>{/if}
         </caption>
         <tr>
 {for $i = 0; $i < 7; $i++} 
@@ -20,7 +20,7 @@
                 <div class="ec-dayOfEvents">{$dayNum}</div>
                 <div class="ec-eventBox">
                     {foreach $events->getForDate($dateInfo["year"],$dateInfo["month"],$dayNum) as $event}
-                    <div class="ec-event">{!$event|texy}</div>
+                        <div class="ec-event">{$event|texy|noescape}</div>
                     {/foreach}
                 </div>
             </td>
@@ -37,8 +37,8 @@
     </table>
 {if $options["showBottomNav"]==TRUE}
     <div class="ec-bottomNavigation">
-        <a n:href="changeMonth!, 'year' => $prev['year'], 'month' => $prev['month']" class="ajax">{_}Previous month{/_}</a>
-        <a n:href="changeMonth!, 'year' => $next['year'], 'month' => $next['month']" class="ajax">{_}Next month{/_}</a>
+        <a n:href="changeMonth!, 'year' => $prev['year'], 'month' => $prev['month']" class="ajax">{_"Previous month"}</a>
+        <a n:href="changeMonth!, 'year' => $next['year'], 'month' => $next['month']" class="ajax">{_"Next month"}</a>
     </div>
 {/if}
 </div>

@@ -1,65 +1,110 @@
 <?php
+declare(strict_types=1);
 
 namespace EventCalendar\Goog;
 
 /**
  * Represent single event from Google Calendar
+ *
+ * @property-read string $id
+ * @property string $status
+ * @property string $htmlLink
+ * @property \DateTime $created
+ * @property \DateTime $updated
+ * @property string $summary
+ * @property string|NULL $location
+ * @property string|NULL $description
+ * @property-read string $creator
+ * @property \DateTime $start
+ * @property \DateTime $end
  */
-class GoogleEvent extends \Nette\Object
+class GoogleEvent
 {
+    use \Nette\SmartObject;
+    
+    /**
+     * @var string
+     */
     private $id;
+    /**
+     * @var string
+     */
     private $status;
+    /**
+     * @var string
+     */
     private $htmlLink;
+    /**
+     * @var \DateTime
+     */
     private $created;
+    /**
+     * @var \DateTime
+     */
     private $updated;
+    /**
+     * @var string
+     */
     private $summary;
+    /**
+     * @var string|NULL
+     */
     private $location = null;
+    /**
+     * @var string|NULL
+     */
     private $description = null;
     private $creator;
+    /**
+     * @var \DateTime
+     */
     private $start;
+    /**
+     * @var \DateTime
+     */
     private $end;
     
-    public function __construct($id)
+    public function __construct(string $id)
     {
         $this->id = $id;
     }
     
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
-
-    public function getStatus()
+    
+    public function getStatus(): string
     {
         return $this->status;
     }
-
-    public function getHtmlLink()
+    
+    public function getHtmlLink(): string
     {
         return $this->htmlLink;
     }
-
-    public function getCreated()
+    
+    public function getCreated(): \DateTime
     {
         return $this->created;
     }
-
-    public function getUpdated()
+    
+    public function getUpdated(): \DateTime
     {
         return $this->updated;
     }
-
-    public function getSummary()
+    
+    public function getSummary(): string
     {
         return $this->summary;
     }
-
-    public function getLocation()
+    
+    public function getLocation(): ?string
     {
         return $this->location;
     }
     
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -68,28 +113,24 @@ class GoogleEvent extends \Nette\Object
     {
         return $this->creator;
     }
-
-    public function getStart()
+    
+    public function getStart(): \DateTime
     {
         return $this->start;
     }
-
-    public function getEnd()
+    
+    public function getEnd(): \DateTime
     {
         return $this->end;
     }
-
-    public function setStatus($status)
+    
+    public function setStatus($status): GoogleEvent
     {
         $this->status = $status;
         return $this;
     }
-
-    /**
-     * @param string $htmlLink
-     * @return \EventCalendar\Goog\GoogleEvent
-     */
-    public function setHtmlLink($htmlLink)
+    
+    public function setHtmlLink(string $htmlLink): GoogleEvent
     {
         $this->htmlLink = $htmlLink;
         return $this;
@@ -97,9 +138,8 @@ class GoogleEvent extends \Nette\Object
 
     /**
      * @param string|\DateTime $created
-     * @return \EventCalendar\Goog\GoogleEvent
      */
-    public function setCreated($created)
+    public function setCreated($created): GoogleEvent
     {
         if (!$created instanceof \DateTime) {
             $created = new \DateTime($created);
@@ -110,9 +150,8 @@ class GoogleEvent extends \Nette\Object
 
     /**
      * @param string|\DateTime $updated
-     * @return \EventCalendar\Goog\GoogleEvent
      */
-    public function setUpdated($updated)
+    public function setUpdated($updated): GoogleEvent
     {
         if (!$updated instanceof \DateTime) {
             $updated = new \DateTime($updated);
@@ -120,32 +159,20 @@ class GoogleEvent extends \Nette\Object
         $this->updated = $updated;
         return $this;
     }
-
-    /**
-     * @param string $summary
-     * @return \EventCalendar\Goog\GoogleEvent
-     */
-    public function setSummary($summary)
+    
+    public function setSummary(string $summary): GoogleEvent
     {
         $this->summary = $summary;
         return $this;
     }
-
-    /**
-     * @param string $location
-     * @return \EventCalendar\Goog\GoogleEvent
-     */
-    public function setLocation($location)
+    
+    public function setLocation(string $location): GoogleEvent
     {
         $this->location = $location;
         return $this;
     }
     
-    /**
-     * @param string $description
-     * @return \EventCalendar\Goog\GoogleEvent
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): GoogleEvent
     {
         $this->description = $description;
         return $this;
@@ -153,9 +180,8 @@ class GoogleEvent extends \Nette\Object
 
     /**
      * @param string|\DateTime $start
-     * @return \EventCalendar\Goog\GoogleEvent
      */
-    public function setStart($start)
+    public function setStart($start): GoogleEvent
     {
         if (!($start instanceof \DateTime)) {
             $start = new \DateTime($start);
@@ -166,9 +192,8 @@ class GoogleEvent extends \Nette\Object
 
     /**
      * @param string|\DateTime $end
-     * @return \EventCalendar\Goog\GoogleEvent
      */
-    public function setEnd($end)
+    public function setEnd($end): GoogleEvent
     {
         if (!$end instanceof \DateTime) {
             $end = new \DateTime($end);
@@ -176,5 +201,4 @@ class GoogleEvent extends \Nette\Object
         $this->end = $end;
         return $this;
     }
-
 }

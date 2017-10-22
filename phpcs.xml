@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<ruleset name="Event Calendar Standard">
+  <description>Coding standard for Event Calendar.</description>
+  <config name="colors" value="1"/>
+  <config name="encoding" value="utf-8"/>
+  <config name="ignore_warnings_on_exit" value="1"/>
+  <config name="tab_width" value="4"/>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/temp/*</exclude-pattern>
+  <exclude-pattern>*/_temp/*</exclude-pattern>
+  <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+  <rule ref="Generic.Classes.DuplicateClassName"/>
+  <rule ref="Generic.CodeAnalysis"/>
+  <rule ref="Generic.ControlStructures.InlineControlStructure">
+    <properties>
+      <property name="error" value="false"/>
+    </properties>
+  </rule>
+  <rule ref="Generic.Files.EndFileNewline"/>
+  <rule ref="Generic.Files.InlineHTML"/>
+  <rule ref="Generic.Files.LineEndings"/>
+  <rule ref="Generic.Formatting.SpaceAfterCast"/>
+  <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+  <rule ref="Generic.Metrics"/>
+  <rule ref="Generic.NamingConventions.ConstructorName"/>
+  <rule ref="Generic.PHP">
+    <exclude name="Generic.PHP.ClosingPHPTag"/>
+    <exclude name="Generic.PHP.LowerCaseConstant"/>
+    <exclude name="Generic.PHP.LowerCaseKeyword"/>
+    <exclude name="Generic.PHP.UpperCaseConstant"/>
+  </rule>
+  <rule ref="Generic.Strings"/>
+  <rule ref="Squiz.Classes.ClassFileName"/>
+  <rule ref="Squiz.Classes.DuplicateProperty"/>
+  <rule ref="Squiz.ControlStructures"/>
+  <rule ref="Squiz.PHP.CommentedOutCode"/>
+  <rule ref="Squiz.PHP.DiscouragedFunctions"/>
+  <rule ref="Squiz.PHP.Eval"/>
+  <rule ref="Squiz.PHP.GlobalKeyword"/>
+  <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
+  <rule ref="Squiz.PHP.NonExecutableCode"/>
+  <rule ref="Squiz.Scope.MemberVarScope"/>
+  <rule ref="Squiz.Scope.StaticThisUsage"/>
+  <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
+  <rule ref="PSR1.Files.SideEffects">
+    <exclude-pattern>*/tests/*</exclude-pattern>
+  </rule>
+  <rule ref="PSR2"/>
+</ruleset>

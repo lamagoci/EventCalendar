@@ -1,3 +1,4 @@
-libs/
-temp/
+/vendor/
+tests/_temp/
 composer.lock
+coverage.*

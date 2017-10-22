@@ -1,0 +1,22 @@
+Version 0.3.0
+- raised minimal version of PHP to 7.1
+- updated for Nette 2.4, dropped support for older versions
+- fixed Composer autoloading
+
+Version 0.2.2
+- added experimental integration with Google Calendar
+
+Version 0.2.1
+- moved IEventModel to namespace EventCalendar
+
+Version 0.2.0
+- text of event is not escaped
+- fixed a bug with switching months
+- fix if method setEvents() wasn't called
+- added SimpleCalendar
+- added Texy support for EventCalendar
+- added wrapper for month and year added & test for EventCalendar
+- added constants for options
+
+Version 0.1.0
+- first version

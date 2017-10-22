@@ -1,55 +1,84 @@
 <?php
+declare(strict_types=1);
 
 namespace EventCalendar;
 
-use \Nette\Application\UI;
-use \EventCalendar\IEventModel;
+use Nette\Application\UI;
+use Nette\Utils\Strings;
 
+/**
+ * @property-write int $firstDay
+ * @property-write array $options
+ * @property-write IEventModel $events
+ * @property-read \Nette\Bridges\ApplicationLatte\Template $template
+ * @method void onDateChange(int $year, int $month)
+ */
 abstract class AbstractCalendar extends UI\Control
 {
-
-    const FIRST_SUNDAY = 0, FIRST_MONDAY = 1;
+    
+    public const FIRST_SUNDAY = 0, FIRST_MONDAY = 1;
+    
+    /**
+     * Show top navigation for changing months, default <b>true</b>
+     */
+    public const OPT_SHOW_TOP_NAV = 'showTopNav';
+    /**
+     * Show bottom navigation for changing months, default <b>true</b>
+     */
+    public const OPT_SHOW_BOTTOM_NAV = 'showBottomNav';
+    /**
+     * maximum length of wday names, by default, full name is used (<b>null</b>)
+     */
+    public const OPT_WDAY_MAX_LEN = 'wdayMaxLen';
 
     /**
-     * @var int
-     * @persistent 
+     * @var int|NULL
+     * @persistent
      */
     public $year = NULL;
 
     /**
-     * @var int
+     * @var int|NULL
      * @persistent
      */
     public $month = NULL;
 
     /**
-     * array of callbacks fn(year, month)
-     * @var array
+     * @var callable[]
      */
     public $onDateChange;
+    
+    /**
+     * @var int
+     */
     protected $firstDay = self::FIRST_SUNDAY;
 
     /**
-     * Model which implements ICalendarEvent
-     * @var ICalendarEvent 
+     * @var IEventModel
      */
     protected $events;
-
-    abstract protected function getTemplateFile();
+    
+    /**
+     * @var array default options for calendar - you can change defaults by setOptions()
+     */
+    protected $options = [
+        'showTopNav' => true,
+        'showBottomNav' => true,
+        'wdayMaxLen' => NULL,
+    ];
+    
+    abstract protected function getTemplateFile(): string;
 
     /**
      * Specify the date on which the week starts
-     * @param int $day
      */
-    public function setFirstDay($day)
+    public function setFirstDay(int $day)
     {
         $this->firstDay = $day;
     }
 
     /**
      * Changes default options, see OPT constants for currently supported options for each type of calendar
-     * 
-     * @param array $options array of options
      */
     public function setOptions(array $options)
     {
@@ -64,38 +93,42 @@ abstract class AbstractCalendar extends UI\Control
     }
 
     /** changes current month and invokes onDateChange event */
-    public function handleChangeMonth()
+    public function handleChangeMonth(): void
     {
         $this->onDateChange($this->year, $this->month);
         if ($this->presenter->isAjax()) {
-            $this->invalidateControl('ecCalendar');
+            $this->redrawControl('ecCalendar');
         } else {
             $this->redirect('this');
         }
     }
-
-    public function render()
+    
+    public function render(): void
     {
         $this->template->setFile($this->getTemplateFile());
 
         $this->prepareDate();
-
-        $dateInfo = array();
-        $dateInfo['year'] = $this->year; // current year
-        $dateInfo['month'] = $this->month; // current month
-        $dateInfo['noOfDays'] = cal_days_in_month(CAL_GREGORIAN, $this->month, $this->year); // count of days in month
-        $dateInfo['firstDayInMonth'] = $this->getFirstDayInMonth($this->year, $this->month); // first day of month
+    
+        /** @var int $year */
+        $year = $this->year;
+        /** @var int $month */
+        $month = $this->month;
+        $dateInfo = [];
+        $dateInfo['year'] = $year; // current year
+        $dateInfo['month'] = $month; // current month
+        $dateInfo['noOfDays'] = cal_days_in_month(CAL_GREGORIAN, $month, $year); // count of days in month
+        $dateInfo['firstDayInMonth'] = $this->getFirstDayInMonth($year, $month); // first day of month
 
         $this->template->dateInfo = $dateInfo;
-        $this->template->next = $this->getNextMonth($this->year, $this->month);
-        $this->template->prev = $this->getPrevMonth($this->year, $this->month);
+        $this->template->next = $this->getNextMonth($year, $month);
+        $this->template->prev = $this->getPrevMonth($year, $month);
         $this->template->options = $this->options;
         $this->template->events = $this->events;
 
         $this->template->render();
     }
-
-    protected function getFirstDayInMonth($year, $month)
+    
+    protected function getFirstDayInMonth(int $year, int $month): int
     {
         $day = getdate(mktime(0, 0, 0, $month, 1, $year));
         if ($this->firstDay == self::FIRST_SUNDAY) {
@@ -108,10 +141,10 @@ abstract class AbstractCalendar extends UI\Control
             }
         }
     }
-
-    protected function getNextMonth($year, $month)
+    
+    protected function getNextMonth(int $year, int $month): array
     {
-        $next = array();
+        $next = [];
         if ($month == 12) {
             $next['month'] = 1;
             $next['year'] = $year + 1;
@@ -121,10 +154,10 @@ abstract class AbstractCalendar extends UI\Control
         }
         return $next;
     }
-
-    protected function getPrevMonth($year, $month)
+    
+    protected function getPrevMonth(int $year, int $month): array
     {
-        $prev = array();
+        $prev = [];
         if ($month == 1) {
             $prev['month'] = 12;
             $prev['year'] = $year - 1;
@@ -134,18 +167,18 @@ abstract class AbstractCalendar extends UI\Control
         }
         return $prev;
     }
-
-    protected function truncateWdays($wdays)
+    
+    protected function truncateWdays(array $wdays): array
     {
         if ($this->options['wdayMaxLen'] > 0) {
             foreach ($wdays as &$value) {
-                $value = \Nette\Utils\Strings::substring($value, 0, $this->options['wdayMaxLen']);
+                $value = Strings::substring($value, 0, $this->options['wdayMaxLen']);
             }
         }
         return $wdays;
     }
-
-    protected function prepareDate()
+    
+    protected function prepareDate(): void
     {
         if ($this->month === NULL || $this->year === NULL) {
             $today = getdate();
@@ -153,5 +186,4 @@ abstract class AbstractCalendar extends UI\Control
             $this->year = $today['year'];
         }
     }
-
 }

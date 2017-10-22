@@ -1,0 +1,42 @@
+language: php
+
+php:
+    - 7.1
+    - 7.2
+    - nightly
+
+notifications:
+    email: false
+
+env:
+    - TESTER_PHP_BIN="php"
+
+matrix:
+    include:
+        - php: 7.1
+          env: TESTER_PHP_BIN=phpdbg
+    allow_failures:
+        - php: 7.2
+        - php: nightly
+
+before_install:
+    - composer self-update
+    - phpenv config-rm xdebug.ini || true
+
+install:
+    - composer install -a --prefer-dist --no-progress --no-suggest --no-interaction
+
+script:
+    - ./vendor/bin/parallel-lint src tests -e php,phpt
+    - ./vendor/bin/phpcs --extensions=php,phpt . --colors -p
+    - ./vendor/bin/phpstan analyze -l 7 -c phpstan.neon src tests
+    - if [ "$TESTER_PHP_BIN" == "php" ]; then ./vendor/bin/run-tests -p php tests -s; fi
+    - if [ "$TESTER_PHP_BIN" == "phpdbg" ]; then ./vendor/bin/run-tests -p phpdbg tests -s --coverage coverage.xml --coverage-src src; fi
+
+after_failure:
+    - for i in $(find ./tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+        - vendor

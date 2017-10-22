@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace EventCalendar\Goog;
 
@@ -6,18 +7,25 @@ use \Nette\Caching\Cache;
 
 /**
  * Class for accessing data in Google Calendar by its API
- * 
- * Currently, only public calendars are allowed 
- * 
+ *
+ * Currently, only public calendars are allowed
+ *
  * See API doc for Google Calendar events: https://developers.google.com/google-apps/calendar/v3/reference/events/list
- * 
+ *
+ * @property-write Cache $cache
+ * @property-write \DateTime $cacheExpiration
+ * @property-write string $searchTerm
+ * @property-write \DateTimeZone $timeZone
  */
-class GoogAdapter extends \Nette\Object
+class GoogAdapter
 {
-
+    use \Nette\SmartObject;
+    
+    /**
+     * @var string
+     */
     private $calendarId;
     private $apiKey;
-
     /**
      * @var Cache
      */
@@ -38,18 +46,14 @@ class GoogAdapter extends \Nette\Object
      * @var \DateTimeZone
      */
     private $timeZone;
-
-    public function __construct($calendarId, $apiKey)
+    
+    public function __construct(string $calendarId, $apiKey)
     {
         $this->calendarId = $calendarId;
         $this->apiKey = $apiKey;
     }
-
-    /**
-     * @param \Nette\Caching\Cache $cache
-     * @return \EventCalendar\Goog\GoogAdapter
-     */
-    public function setCache(Cache $cache)
+    
+    public function setCache(Cache $cache): GoogAdapter
     {
         $this->cache = $cache;
         return $this;
@@ -57,10 +61,8 @@ class GoogAdapter extends \Nette\Object
 
     /**
      * set expiration for cache
-     * @param \DateTime $dateTime
-     * @return \EventCalendar\Goog\GoogAdapter
      */
-    public function setCacheExpiration(\DateTime $dateTime)
+    public function setCacheExpiration(\DateTime $dateTime): GoogAdapter
     {
         $this->cacheExpiration = $dateTime;
         return $this;
@@ -68,20 +70,14 @@ class GoogAdapter extends \Nette\Object
 
     /**
      * filter events by search term
-     * @param string $searchTerm
-     * @return \EventCalendar\Goog\GoogAdapter
      */
-    public function setSearchTerm($searchTerm)
+    public function setSearchTerm(string $searchTerm): GoogAdapter
     {
         $this->searchTerm = $searchTerm;
         return $this;
     }
-
-    /**
-     * @param boolean $boolean
-     * @return \EventCalendar\Goog\GoogAdapter
-     */
-    public function showDeleted($boolean)
+    
+    public function showDeleted(bool $boolean): GoogAdapter
     {
         $this->showDeleted = $boolean;
         return $this;
@@ -89,10 +85,8 @@ class GoogAdapter extends \Nette\Object
 
     /**
      * Return recurring events one by one
-     * @param boolean $boolean
-     * @return \EventCalendar\Goog\GoogAdapter
      */
-    public function expandRecurringEvents($boolean)
+    public function expandRecurringEvents(bool $boolean): GoogAdapter
     {
         $this->expandRecurringEvents = $boolean;
         return $this;
@@ -100,10 +94,8 @@ class GoogAdapter extends \Nette\Object
 
     /**
      * Set timezone in which results are returned
-     * @param \DateTimeZone $timeZone
-     * @return \EventCalendar\Goog\GoogAdapter
      */
-    public function setTimeZone(\DateTimeZone $timeZone)
+    public function setTimeZone(\DateTimeZone $timeZone): GoogAdapter
     {
         $this->timeZone = $timeZone;
         return $this;
@@ -111,11 +103,8 @@ class GoogAdapter extends \Nette\Object
 
     /**
      * Time constraint for events from Google Calendar. Used by GoogleCalendar for getting events only for current month.
-     * @param int $year
-     * @param int $month
-     * @return \EventCalendar\Goog\GoogAdapter
      */
-    public function setBoundary($year, $month)
+    public function setBoundary(int $year, int $month): GoogAdapter
     {
         $this->year = $year;
         $this->month = $month;
@@ -134,10 +123,9 @@ class GoogAdapter extends \Nette\Object
 
     /**
      * Load events from Google Calendar via API or from cache
-     * @return \EventCalendar\Goog\GoogData
      * @throws GoogApiException
      */
-    public function loadEvents()
+    public function loadEvents(): GoogData
     {
         // return from cache
         if (isset($this->cache)) {
@@ -166,7 +154,7 @@ class GoogAdapter extends \Nette\Object
                         ->setEnd($item->end->dateTime);
                 if (isset($item->location)) {
                     $event->setLocation($item->location);
-                } 
+                }
                 if (isset($item->description)) {
                     $event->setDescription($item->description);
                 }
@@ -177,7 +165,7 @@ class GoogAdapter extends \Nette\Object
         // save loaded data to cache
         if (isset($this->cache)) {
             if (isset($this->cacheExpiration)) {
-                $dependencies = array(Cache::EXPIRATION => $this->cacheExpiration->getTimestamp());
+                $dependencies = [Cache::EXPIRATION => $this->cacheExpiration->getTimestamp()];
             } else {
                 $dependencies = null;
             }
@@ -195,8 +183,8 @@ class GoogAdapter extends \Nette\Object
         curl_close($curl);
         return $response;
     }
-
-    private function prepareUrl()
+    
+    private function prepareUrl(): string
     {
         $url = 'https://www.googleapis.com/calendar/v3/calendars/';
         $url .= urlencode($this->calendarId);
@@ -217,5 +205,4 @@ class GoogAdapter extends \Nette\Object
         }
         return $url;
     }
-
 }
