@@ -1,5 +1,5 @@
 {
-    "name": "lamagoci/event-calendar",
+    "name": "lamagoci/EventCalendar",
     "description": "Plugin for Nette based web applications for creating calendar with custom events",
     "homepage": "http://www.nimral.cz/calendar",
     "license": "BSD-3-Clause",
